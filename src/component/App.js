@@ -70,7 +70,6 @@ class App extends Component {
         <NavBar total={this.state.products.filter(p=>p.selected).length}/>
         <Switch>
           <Route path='/notFound' component={NotFound}/>
-          <Route path='/Login' component={Login}/>
           <Route path='/menu' render={props=>(
             <Menu
               products={this.state.products}
@@ -94,7 +93,7 @@ class App extends Component {
             onDelete={this.select}
             {...props}
           />)}/>
-          <Redirect from="/" exact to="/Login"/>
+          <Redirect from="/" exact to="/admin"/>
           <Redirect from="*" to='/notFound'/>
         </Switch>
       </React.Fragment>
