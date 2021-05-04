@@ -2,7 +2,6 @@ import React from 'react';
 import Product from './product';
 
 const ShoppingCart = props => {
-    console.log(props.products)
     return ( 
         <React.Fragment>
             {props.products.map(p=>(

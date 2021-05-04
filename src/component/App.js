@@ -1,21 +1,26 @@
 import React, { Component } from 'react';
 import { Redirect, Route, Switch } from 'react-router';
+import axios from 'axios';
 
 import NavBar from './nav';
 import Menu from './Menu';
 import ShoppingCart from './shoppingCart';
 import NotFound from './NotFound';
 import Login from './login';
+import Admin from './Admin';
+import UpdateProduct from './updateProduct';
+// import Product from './product';
 
 
 class App extends Component {
   state = { 
-  products : [
-    {id:1,Name:"chips", price:20, count:0, selected:false},
-    {id:2,Name:"Cola", price:15, count:0, selected:false},
-    {id:3,Name:"Burger", price:40, count:0, selected:false},
-    {id:4,Name:"Frise", price:15, count:0, selected:false}
-  ]
+    products : []
+   }
+
+   async componentDidMount(){
+     const { data } = await axios.get("http://localhost:3000/products/");
+    
+     this.setState({products : data});
    }
 
    select=pro=>{
@@ -46,9 +51,22 @@ class App extends Component {
      this.setState({products});
    }
 
+   handleDelete = async pro =>{
+     const oldProducts = [ ...this.state.products ];
+     const products = this.state.products.filter(p => p.id !== pro.id);
+     this.setState({products});
+     try{
+       await axios.delete("http://localhost:3000/products/hkhk"+pro.id);
+     }catch(ex){
+      alert("can't delete");
+      this.setState({ products : oldProducts });
+     }
+   }
+
   render() { 
     return ( 
       <React.Fragment>
+        
         <NavBar total={this.state.products.filter(p=>p.selected).length}/>
         <Switch>
           <Route path='/notFound' component={NotFound}/>
@@ -60,6 +78,15 @@ class App extends Component {
               {...props}
             />
           )}/>
+          
+          <Route path='/admin' render={props=>(
+            <Admin
+              products={this.state.products}
+              onDelete={this.handleDelete}
+              {...props}
+            />
+          )}/>
+          <Route path="/productForm/:id" component={UpdateProduct}/>
           <Route path='/cart' render={props=>(
             <ShoppingCart 
             products={this.state.products.filter(p=>p.selected)}
@@ -67,7 +94,7 @@ class App extends Component {
             onDelete={this.select}
             {...props}
           />)}/>
-          <Redirect from="/" to="/Login"/>
+          <Redirect from="/" exact to="/Login"/>
           <Redirect from="*" to='/notFound'/>
         </Switch>
       </React.Fragment>
